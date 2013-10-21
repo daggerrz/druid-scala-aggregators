@@ -1,0 +1,39 @@
+{
+    "dataSource": "users",
+    "timestampColumn": "ts",
+    "timestampFormat": "utcdt",
+    "dataSpec": {
+        "format": "json",
+        "columns": ["ts", "ssn", "gender", "age", "income"],
+        "dimensions": [
+            "gender",
+            "age"
+        ]
+    },
+    "granularitySpec": {
+        "type":"uniform",
+        "intervals":["2010-01-01T01/PT1H"],
+        "gran":"hour"
+    },
+    "pathSpec": { "type": "granularity",
+        "dataGranularity": "hour",
+        "inputPath": "file://./aggregations/src/test/resources",
+        "filePattern": "users.json" },
+    "rollupSpec": { "aggs": [
+        {"type":"count", "name":"users"},
+        {"type":"intAverage", "fieldName": "income", "name":"int_avg"}
+    ], "rollupGranularity": "minute"},
+    "workingPath": "/tmp/druid",
+    "segmentOutputPath": "s3n://tapad-taps/druid-segments",
+    "leaveIntermediate": "false",
+    "partitionsSpec": {
+        "targetPartitionSize": 5000000
+    },
+    "updaterJobSpec": {
+        "type":"db",
+        "connectURI":"jdbc:mysql://localhost:3306/druid",
+        "user":"druid",
+        "password":"diurd",
+        "segmentTable":"dev_segments"
+    }
+}
